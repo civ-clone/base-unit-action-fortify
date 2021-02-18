@@ -46,6 +46,8 @@ export class Fortify extends DelayedAction {
       .sort((a: number, b: number): number => b - a);
 
     super.perform(moveCost, (): void => {
+      this.unit().moves().set(0);
+      this.unit().setActive(false);
       this.unit().setBusy(new Busy(new Criterion(() => false)));
 
       this.#unitImprovementRegistry.register(new Fortified(this.unit()));

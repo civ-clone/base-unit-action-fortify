@@ -35,6 +35,8 @@ class Fortify extends DelayedAction_1.default {
             .process(MovementCost_1.MovementCost, this.unit(), this)
             .sort((a, b) => b - a);
         super.perform(moveCost, () => {
+            this.unit().moves().set(0);
+            this.unit().setActive(false);
             this.unit().setBusy(new Busy_1.default(new Criterion_1.default(() => false)));
             __classPrivateFieldGet(this, _unitImprovementRegistry).register(new UnitImprovements_1.Fortified(this.unit()));
         });
