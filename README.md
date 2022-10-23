@@ -1,4 +1,3 @@
 # base-unit-action-fortify
 
-This is a template repo.
-
+This package provides the `Fortify` `Action` for `Unit`s.

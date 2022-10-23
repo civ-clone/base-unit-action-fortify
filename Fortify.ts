@@ -1,8 +1,3 @@
-import { Moved, IMovedRegistry } from '@civ-clone/core-unit/Rules/Moved';
-import {
-  MovementCost,
-  IMovementCostRegistry,
-} from '@civ-clone/core-unit/Rules/MovementCost';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -18,8 +13,10 @@ import {
 import BusyFortified from './Rules/Fortified';
 import Criterion from '@civ-clone/core-rule/Criterion';
 import DelayedAction from '@civ-clone/core-unit/DelayedAction';
-import { Fortified } from '@civ-clone/base-unit-improvement-fortified/UnitImprovements';
+import Fortified from '@civ-clone/base-unit-improvement-fortified/UnitImprovements/Fortified';
 import Fortifying from './Rules/Fortifying';
+import Moved from '@civ-clone/core-unit/Rules/Moved';
+import MovementCost from '@civ-clone/core-unit/Rules/MovementCost';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
 
@@ -40,7 +37,7 @@ export class Fortify extends DelayedAction {
   }
 
   perform() {
-    const [moveCost]: number[] = (this.ruleRegistry() as IMovementCostRegistry)
+    const [moveCost]: number[] = this.ruleRegistry()
       .process(MovementCost, this.unit(), this)
       .sort((a: number, b: number): number => b - a);
 
@@ -56,7 +53,7 @@ export class Fortify extends DelayedAction {
       Fortifying
     );
 
-    (this.ruleRegistry() as IMovedRegistry).process(Moved, this.unit(), this);
+    this.ruleRegistry().process(Moved, this.unit(), this);
   }
 }
 
