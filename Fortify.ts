@@ -21,7 +21,7 @@ import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
 
 export class Fortify extends DelayedAction {
-  #unitImprovementRegistry: UnitImprovementRegistry;
+  private _unitImprovementRegistry: UnitImprovementRegistry;
 
   constructor(
     from: Tile,
@@ -33,7 +33,7 @@ export class Fortify extends DelayedAction {
   ) {
     super(from, to, unit, ruleRegistry, turn);
 
-    this.#unitImprovementRegistry = unitImprovementRegistry;
+    this._unitImprovementRegistry = unitImprovementRegistry;
   }
 
   perform() {
@@ -48,7 +48,7 @@ export class Fortify extends DelayedAction {
         this.unit().setActive(false);
         this.unit().setBusy(new BusyFortified(new Criterion(() => false)));
 
-        this.#unitImprovementRegistry.register(new Fortified(this.unit()));
+        this._unitImprovementRegistry.register(new Fortified(this.unit()));
       },
       Fortifying
     );
