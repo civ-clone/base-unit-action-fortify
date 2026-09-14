@@ -4,6 +4,7 @@ import { UnitImprovementRegistry } from '@civ-clone/core-unit-improvement/UnitIm
 import DelayedAction from '@civ-clone/core-unit/DelayedAction';
 import Tile from '@civ-clone/core-world/Tile';
 import Unit from '@civ-clone/core-unit/Unit';
+export declare const COMPLETE = 'base-unit-action-fortify:complete';
 export declare class Fortify extends DelayedAction {
   private _unitImprovementRegistry;
   constructor(
