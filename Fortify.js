@@ -26,6 +26,30 @@ class Fortify extends DelayedAction_1.default {
         super.perform(moveCost, exports.COMPLETE, Fortifying_1.default);
         this.ruleRegistry().process(Moved_1.default, this.unit(), this);
     }
+    /**
+     * What finishing does, against the registries this action was constructed
+     * with.
+     *
+     * This was the closure passed to `perform`, bound to `this`. Converting it
+     * to a `PendingEffect` handler first moved it to module scope, where `this`
+     * is gone, and the registries became `…Instance` singletons — invisible in
+     * the game, which uses the singletons, and wrong everywhere else. A method
+     * keeps the original body — `this` read as `action` — and
+     * `registerDelayedAction` hands the handler the action that was performed,
+     * so this runs on that one.
+     *
+     * Static, because an instance method would not compile: a new public member
+     * makes this class unassignable to `Action` (`DataObject._keys:
+     * (keyof this)[]`), and it is passed as one to `MovementCost` and `Moved`.
+     * A static method of the class may still read its instances' private
+     * fields, and does not change `keyof this`.
+     */
+    static complete(action) {
+        action.unit().moves().set(0);
+        action.unit().setActive(false);
+        action.unit().setBusy(new Fortified_1.default(new Criterion_1.default(() => false)));
+        action._unitImprovementRegistry.register(new Fortified_2.default(action.unit()));
+    }
 }
 exports.Fortify = Fortify;
 // Fortifying is a delayed action that becomes a *permanent* busy state, so
@@ -39,12 +63,7 @@ exports.Fortify = Fortify;
     BusyRule: Fortifying_1.default,
     handler: exports.COMPLETE,
     action: (unit) => new Fortify(unit.tile(), unit.tile(), unit),
-    complete: (unit) => {
-        unit.moves().set(0);
-        unit.setActive(false);
-        unit.setBusy(new Fortified_1.default(new Criterion_1.default(() => false)));
-        UnitImprovementRegistry_1.instance.register(new Fortified_2.default(unit));
-    },
+    complete: (unit, pendingEffect, action) => Fortify.complete(action),
 });
 // `Fortified` is the state it arrives at: permanent until something else
 // changes it, so its criterion is `() => false` and there is nothing to

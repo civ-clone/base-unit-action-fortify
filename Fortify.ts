@@ -49,6 +49,34 @@ export class Fortify extends DelayedAction {
 
     this.ruleRegistry().process(Moved, this.unit(), this);
   }
+
+  /**
+   * What finishing does, against the registries this action was constructed
+   * with.
+   *
+   * This was the closure passed to `perform`, bound to `this`. Converting it
+   * to a `PendingEffect` handler first moved it to module scope, where `this`
+   * is gone, and the registries became `…Instance` singletons — invisible in
+   * the game, which uses the singletons, and wrong everywhere else. A method
+   * keeps the original body — `this` read as `action` — and
+   * `registerDelayedAction` hands the handler the action that was performed,
+   * so this runs on that one.
+   *
+   * Static, because an instance method would not compile: a new public member
+   * makes this class unassignable to `Action` (`DataObject._keys:
+   * (keyof this)[]`), and it is passed as one to `MovementCost` and `Moved`.
+   * A static method of the class may still read its instances' private
+   * fields, and does not change `keyof this`.
+   */
+  static complete(action: Fortify): void {
+    action.unit().moves().set(0);
+
+    action.unit().setActive(false);
+
+    action.unit().setBusy(new BusyFortified(new Criterion(() => false)));
+
+    action._unitImprovementRegistry.register(new Fortified(action.unit()));
+  }
 }
 
 // Fortifying is a delayed action that becomes a *permanent* busy state, so
@@ -62,13 +90,7 @@ registerDelayedAction({
   BusyRule: Fortifying,
   handler: COMPLETE,
   action: (unit: Unit) => new Fortify(unit.tile(), unit.tile(), unit),
-  complete: (unit: Unit) => {
-    unit.moves().set(0);
-    unit.setActive(false);
-    unit.setBusy(new BusyFortified(new Criterion(() => false)));
-
-    unitImprovementRegistryInstance.register(new Fortified(unit));
-  },
+  complete: (unit, pendingEffect, action) => Fortify.complete(action),
 });
 
 // `Fortified` is the state it arrives at: permanent until something else
