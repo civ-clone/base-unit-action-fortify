@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "lib": [
-      "es2019"
+      "es2020"
     ],
     "module": "commonjs",
     "sourceMap": true,
@@ -11,6 +11,6 @@
   },
   "exclude": [
     "node_modules",
-    "tests/*.test.ts"
+    "tests"
   ]
 }
