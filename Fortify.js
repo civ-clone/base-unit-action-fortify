@@ -62,7 +62,9 @@ exports.Fortify = Fortify;
 (0, registerDelayedAction_1.default)({
     BusyRule: Fortifying_1.default,
     handler: exports.COMPLETE,
-    action: (unit) => new Fortify(unit.tile(), unit.tile(), unit),
+    // Built from the game the unit is loaded into, so finishing after a load writes where that game looks
+    //  (civ-clone/web-renderer#248).
+    action: (unit, context) => new Fortify(unit.tile(), unit.tile(), unit, context.rules, context.turn, context.unitImprovements),
     complete: (unit, pendingEffect, action) => Fortify.complete(action),
 });
 // `Fortified` is the state it arrives at: permanent until something else

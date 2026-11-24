@@ -1,3 +1,4 @@
+import { BusyContext } from '@civ-clone/core-unit/BusyRegistry';
 import {
   RuleRegistry,
   instance as ruleRegistryInstance,
@@ -89,7 +90,19 @@ export class Fortify extends DelayedAction {
 registerDelayedAction({
   BusyRule: Fortifying,
   handler: COMPLETE,
-  action: (unit: Unit) => new Fortify(unit.tile(), unit.tile(), unit),
+  // Built from the game the unit is loaded into, so finishing after a load writes where that game looks
+  //  (civ-clone/web-renderer#248).
+  action: (unit: Unit, context: BusyContext) =>
+    new Fortify(
+      unit.tile(),
+      unit.tile(),
+      unit,
+      context.rules,
+      context.turn,
+      (
+        context as { unitImprovements?: UnitImprovementRegistry }
+      ).unitImprovements
+    ),
   complete: (unit, pendingEffect, action) => Fortify.complete(action),
 });
 
